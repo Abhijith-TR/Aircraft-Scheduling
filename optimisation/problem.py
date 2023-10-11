@@ -14,5 +14,10 @@ class Problem(ABC):
         pass
 
     @abstractmethod
-    def generate_solution(self):
+    def generate_solution(self) -> Any:
+        """
+        Generates a random solution to begin with.
+
+        :return:
+        """
         pass

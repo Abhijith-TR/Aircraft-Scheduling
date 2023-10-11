@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from Otimisation.Problem import Problem
+from optimisation.problem import Problem
 
 
 class Optimiser(ABC):

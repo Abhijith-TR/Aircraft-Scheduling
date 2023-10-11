@@ -1,5 +1,5 @@
-from Otimisation.Problem import Problem
-from Otimisation.Optimiser import Optimiser
+from optimisation.problem import Problem
+from optimisation.optimiser import Optimiser
 from enum import Enum
 from typing import Any
 import random
@@ -22,9 +22,12 @@ class Bee:
         _id: Unique id of the bee
     """
 
-    def __init__(self, solution: Any, fitness: float, bee_type: BeeType, _id: int = None):
+    def __init__(
+        self, solution: Any, fitness: float, bee_type: BeeType, _id: int = None
+    ):
         """
         Constructor for Bee class
+
         :param solution: solution of the bee
         :param fitness: fitness of the solution
         :param bee_type: type of the bee
@@ -39,6 +42,7 @@ class Bee:
     def update_solution(self, solution, fitness: float = None) -> None:
         """
         Function to update the solution of the bee
+
         :param solution: new solution
         :param fitness: fitness of the new solution
         :return: None
@@ -64,9 +68,18 @@ class BeeColonyOptimiser(Optimiser):
         trail_limits: Trail limit
         bees: List of bees
     """
-    def __int__(self, problem: Problem, number_of_bees: int, max_iter: int, trial_limit: int, max_scouts: int = 1):
+
+    def __int__(
+        self,
+        problem: Problem,
+        number_of_bees: int,
+        max_iter: int,
+        trial_limit: int,
+        max_scouts: int = 1,
+    ):
         """
         Constructor for Bee Colony Optimiser
+
         :param problem: Problem to optimise
         :param number_of_bees: Number of bees
         :param max_iter: maximum number of iterations (stopping condition)
@@ -81,20 +94,28 @@ class BeeColonyOptimiser(Optimiser):
         self.bees = []
 
         for _ in range(self.number_of_bees):
+            solution = self.problem.generate_solution()
             if _ < self.number_of_bees / 2:
-                self.bees.append(Bee(self.problem.generate_solution(), BeeType.EMPLOYED))
+                self.bees.append(
+                    Bee(solution, self.problem.evaluate(solution), BeeType.EMPLOYED)
+                )
             else:
-                self.bees.append(Bee(self.problem.generate_solution(), BeeType.EXPLORER))
+                self.bees.append(
+                    Bee(solution, self.problem.evaluate(solution), BeeType.EXPLORER)
+                )
 
     def employed_exploit(self) -> None:
         """
         Function to exploit the employed bees
+
         :return: None
         """
         for bee in self.bees:
             next_solution = self.problem.next(bee.solution)
-            if self.problem.evaluate(next_solution) < self.problem.evaluate(bee.solution):
-                bee.update_solution(next_solution)
+            if self.problem.evaluate(next_solution) < self.problem.evaluate(
+                bee.solution
+            ):
+                bee.update_solution(next_solution, self.problem.evaluate(next_solution))
                 bee.trials = 0
             else:
                 bee.trials += 1
@@ -102,6 +123,7 @@ class BeeColonyOptimiser(Optimiser):
     def onlooker_exploit(self, probabilities: list[(Bee, float)]) -> None:
         """
         Function to simulate onlooker bees selecting the food sources based on probability
+
         :param probabilities: List of probabilities of each bee(solution)
         :return: None
         """
@@ -126,6 +148,7 @@ class BeeColonyOptimiser(Optimiser):
     def explore(self) -> None:
         """
         Function to simulate bees exploring food sources as scouts once they have exhausted their trials
+
         :return: None
         """
         scout_candidates = [bee for bee in self.bees if bee.type == BeeType.EMPLOYED]
@@ -143,14 +166,20 @@ class BeeColonyOptimiser(Optimiser):
     def optimise(self):
         """
         Function to optimise the problem
+
         :return: Solution to the problem in the form of a problem solution
         """
         for _ in range(self.max_iter):
             self.employed_exploit()
-            probabilities = [(bee, self.problem.evaluate(bee.solution)) for bee in self.bees]
+            probabilities = [
+                (bee, self.problem.evaluate(bee.solution)) for bee in self.bees
+            ]
             self.onlooker_exploit(probabilities)
             self.explore()
-            self.best_solution = min(min(self.bees, key=lambda x: x.fitness).solution, self.best_solution,
-                                     key=lambda x: x.fitness)
+            self.best_solution = min(
+                min(self.bees, key=lambda x: x.fitness).solution,
+                self.best_solution,
+                key=lambda x: x.fitness,
+            )
 
         return self.best_solution

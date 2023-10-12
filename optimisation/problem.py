@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from typing import Any
 
 class Problem(ABC):
     def __init__(self):
@@ -10,7 +10,7 @@ class Problem(ABC):
         pass
 
     @abstractmethod
-    def next(self, solution):
+    def next(self, solution, companion):
         pass
 
     @abstractmethod
@@ -18,6 +18,6 @@ class Problem(ABC):
         """
         Generates a random solution to begin with.
 
-        :return:
+        :return: A solution to the problem
         """
         pass

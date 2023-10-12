@@ -93,15 +93,15 @@ class BeeColonyOptimiser(Optimiser):
         self.trail_limits = trial_limit
         self.bees = []
 
-        for _ in range(self.number_of_bees):
+        for i in range(self.number_of_bees):
             solution = self.problem.generate_solution()
-            if _ < self.number_of_bees / 2:
+            if i < self.number_of_bees / 2:
                 self.bees.append(
                     Bee(solution, self.problem.evaluate(solution), BeeType.EMPLOYED)
                 )
             else:
                 self.bees.append(
-                    Bee(solution, self.problem.evaluate(solution), BeeType.EXPLORER)
+                    Bee(None, None, BeeType.EXPLORER)
                 )
 
     def employed_exploit(self) -> None:
@@ -110,8 +110,10 @@ class BeeColonyOptimiser(Optimiser):
 
         :return: None
         """
-        for bee in self.bees:
-            next_solution = self.problem.next(bee.solution)
+        employed_bees = [bee for bee in self.bees if bee.type == BeeType.EMPLOYED]
+        for bee in employed_bees:
+            other_bees = [other_bee for other_bee in self.bees if other_bee != bee]
+            next_solution = self.problem.next(bee.solution, random.choice(other_bees).solution)
             if self.problem.evaluate(next_solution) < self.problem.evaluate(
                 bee.solution
             ):
@@ -122,7 +124,8 @@ class BeeColonyOptimiser(Optimiser):
 
     def onlooker_exploit(self, probabilities: list[(Bee, float)]) -> None:
         """
-        Function to simulate onlooker bees selecting the food sources based on probability
+        Function to simulate onlooker bees selecting the food sources based on 
+        probability
 
         :param probabilities: List of probabilities of each bee(solution)
         :return: None
@@ -136,8 +139,8 @@ class BeeColonyOptimiser(Optimiser):
         while index < len(onlookers):
             bee, probability = probabilities[probability_index]
 
-            if random.random() >= probability:
-                onlookers[index].update_solution(bee.solution)
+            if random.random() <= probability:
+                onlookers[index].update_solution(bee.solution, self.problem.evaluate(bee.solution))
                 bee.type = BeeType.EXPLORER
                 onlookers[index].type = BeeType.EMPLOYED
                 onlookers[index].trials = bee.trials
@@ -147,7 +150,8 @@ class BeeColonyOptimiser(Optimiser):
 
     def explore(self) -> None:
         """
-        Function to simulate bees exploring food sources as scouts once they have exhausted their trials
+        Function to simulate bees exploring food sources as scouts once they have
+        exhausted their trials
 
         :return: None
         """
@@ -171,8 +175,9 @@ class BeeColonyOptimiser(Optimiser):
         """
         for _ in range(self.max_iter):
             self.employed_exploit()
+            # TODO: Fix probabilities to reflect fitness
             probabilities = [
-                (bee, self.problem.evaluate(bee.solution)) for bee in self.bees
+                (bee, 1/(1+self.problem.evaluate(bee.solution))) for bee in self.bees
             ]
             self.onlooker_exploit(probabilities)
             self.explore()

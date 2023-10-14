@@ -10,12 +10,22 @@ class Airplane:
     """
 
     ac_type: int
+    input_time: int
+    starting_time: int
+    ending_time: int
     eta_etd: list[int]
     delay_cost: int
     pre_cost: int
 
     def __init__(
-        self, ac_type: int, eta_etd: list[int], delay_cost: int, pre_cost: int
+        self,
+        ac_type: int,
+        input_time: int,
+        starting_time: int,
+        ending_time: int,
+        eta_etd: list[int],
+        delay_cost: int,
+        pre_cost: int,
     ):
         """
         Constructor for Airplane class
@@ -26,6 +36,9 @@ class Airplane:
         :param pre_cost: Cost of arrival earlier than eta
         """
         self.ac_type = ac_type
+        self.input_time = input_time
+        self.starting_time = starting_time
+        self.ending_time = ending_time
         self.eta_etd = eta_etd
         self.delay_cost = delay_cost
         self.pre_cost = pre_cost

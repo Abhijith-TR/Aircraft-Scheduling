@@ -14,7 +14,13 @@ def input_ac_details(no_of_ac: int, file: typing.TextIO):
     for i in range(no_of_ac):
         ac_details = list(map(int, file.readline().split()))
         aeroplane = Airplane(
-            ac_details[0], ac_details[1:-2], ac_details[-2], ac_details[-1]
+            ac_details[0],
+            ac_details[1],
+            ac_details[2],
+            ac_details[3],
+            ac_details[4:-2],
+            ac_details[-2],
+            ac_details[-1],
         )
         ac_list.append(aeroplane)
     return ac_list

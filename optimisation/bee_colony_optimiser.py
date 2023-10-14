@@ -100,9 +100,7 @@ class BeeColonyOptimiser(Optimiser):
                     Bee(solution, self.problem.evaluate(solution), BeeType.EMPLOYED)
                 )
             else:
-                self.bees.append(
-                    Bee(None, None, BeeType.EXPLORER)
-                )
+                self.bees.append(Bee(None, None, BeeType.EXPLORER))
 
     def employed_exploit(self) -> None:
         """
@@ -113,7 +111,9 @@ class BeeColonyOptimiser(Optimiser):
         employed_bees = [bee for bee in self.bees if bee.type == BeeType.EMPLOYED]
         for bee in employed_bees:
             other_bees = [other_bee for other_bee in self.bees if other_bee != bee]
-            next_solution = self.problem.next(bee.solution, random.choice(other_bees).solution)
+            next_solution = self.problem.next(
+                bee.solution, random.choice(other_bees).solution
+            )
             if self.problem.evaluate(next_solution) < self.problem.evaluate(
                 bee.solution
             ):
@@ -124,7 +124,7 @@ class BeeColonyOptimiser(Optimiser):
 
     def onlooker_exploit(self, probabilities: list[(Bee, float)]) -> None:
         """
-        Function to simulate onlooker bees selecting the food sources based on 
+        Function to simulate onlooker bees selecting the food sources based on
         probability
 
         :param probabilities: List of probabilities of each bee(solution)
@@ -140,7 +140,9 @@ class BeeColonyOptimiser(Optimiser):
             bee, probability = probabilities[probability_index]
 
             if random.random() <= probability:
-                onlookers[index].update_solution(bee.solution, self.problem.evaluate(bee.solution))
+                onlookers[index].update_solution(
+                    bee.solution, self.problem.evaluate(bee.solution)
+                )
                 bee.type = BeeType.EXPLORER
                 onlookers[index].type = BeeType.EMPLOYED
                 onlookers[index].trials = bee.trials
@@ -177,7 +179,8 @@ class BeeColonyOptimiser(Optimiser):
             self.employed_exploit()
             # TODO: Fix probabilities to reflect fitness
             probabilities = [
-                (bee, 1/(1+self.problem.evaluate(bee.solution))) for bee in self.bees
+                (bee, 1 / (1 + self.problem.evaluate(bee.solution)))
+                for bee in self.bees
             ]
             self.onlooker_exploit(probabilities)
             self.explore()

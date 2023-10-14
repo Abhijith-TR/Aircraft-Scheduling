@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+
 class Problem(ABC):
     def __init__(self):
         pass

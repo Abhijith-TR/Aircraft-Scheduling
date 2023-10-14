@@ -4,7 +4,7 @@ no_of_aeroplane_types
 separation_matrix
 
 no_of_landing_aeroplanes
-aeroplane_number type input_time eta*no_of_runways early_cost late_cost
+aeroplane_number type input_time starting_time ending_time eta*no_of_runways early_cost late_cost
 
 no_of_takeoff_aeroplanes
-aeroplane_number type input_time etd*no_of_runways early_cost late_cost
+aeroplane_number type input_time starting_time ending_time etd*no_of_runways early_cost late_cost

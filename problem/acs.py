@@ -48,7 +48,7 @@ class ACS(Problem):
         self.landing_ac = landing_ac
         self.takeoff_ac = takeoff_ac
         self.all_ac = self.landing_ac + self.takeoff_ac
-        self.all_ac.sort(key=lambda x: min(x.eta_etd))
+        self.all_ac.sort(key=lambda x: x.ending_time)
 
     def evaluate(self, solution: list[int]) -> int:
         """
@@ -77,9 +77,7 @@ class ACS(Problem):
             )
 
             landing_time = max(self.all_ac[i].eta_etd, min_runway_landing_time)
-            cost += (landing_time - self.all_ac[i].eta_etd) * self.all_ac[
-                i
-            ].delay_cost
+            cost += (landing_time - self.all_ac[i].eta_etd) * self.all_ac[i].delay_cost
             current_runway_times[solution[i] - 1] = landing_time
 
         return cost
@@ -95,14 +93,16 @@ class ACS(Problem):
         """
         new_solution = solution.copy()
         index = random.randint(0, len(new_solution) - 1)
-        phi = 2*random.random()-1
-        new_solution[index] = int(round(solution[index] + phi*(solution[index]-companion[index])))
+        phi = 2 * random.random() - 1
+        new_solution[index] = int(
+            round(solution[index] + phi * (solution[index] - companion[index]))
+        )
         new_solution[index] = max(1, new_solution[index])
         new_solution[index] = min(self.no_of_runways, new_solution[index])
         return new_solution
 
     def generate_solution(self):
-        """"
+        """ "
         Generates a random solution to the problem. The solution is a list of integers,
         where the index of the list represents the airplane and the value at that
         index represents the runway. The order of the airplanes in the list is the

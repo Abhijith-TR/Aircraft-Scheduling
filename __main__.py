@@ -15,7 +15,7 @@ def make_input_from_csv(
         f.writelines(["82 69 60\n", "131 69 60\n", "196 157 96\n"])
         ac_df = pd.read_csv(path)
 
-        categories = {"Light": 0, "Medium": 1, "Heavy": 2}
+        categories = {"Light": 1, "Medium": 2, "Heavy": 3}
         f.writelines(f"{len(ac_df)}\n")
         for _, row in ac_df.iterrows():
             file_row = f"{row['mdl']} {categories[row['category']]} {row['sta_s'] - 60*40} {row['sta_s'] - 20*60} {row['sta_s'] + 20*60} "

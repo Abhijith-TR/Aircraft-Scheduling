@@ -40,23 +40,13 @@ class OptimiserTest(unittest.TestCase):
         num_employed = len([bee for bee in bco.bees if bee.type == BeeType.EMPLOYED])
         num_onlookers = len([bee for bee in bco.bees if bee.type == BeeType.UNEMPLOYED])
 
-        assert num_employed == 5, "Number of employed bees should be 5"
-        assert num_onlookers == 5, "Number of onlookers bees should be 5"
+        self.assertEqual(num_employed, 5)
+        self.assertEqual(num_onlookers, 5)
 
         bco.optimise_iter(1)
 
-        assert (
-            num_employed == 5
-        ), f"Number of employed bees should be 5 was {num_employed}"
-        assert (
-            num_onlookers == 5
-        ), f"Number of onlookers bees should be 5 was {num_onlookers}"
-        assert (
-            mock_problem.next.call_count == 5
-        ), f"next should be called 5 times called {mock_problem.next.call_count} times"
-        assert (
-            mock_problem.evaluate.call_count == 20
-        ), f"Evaluate should be called 5 times called {mock_problem.evaluate.call_count} times"
-        assert (
-            bco.best_solution.fitness == 0.0
-        ), f"Best solution should be 0.0 was {bco.best_solution.fitness}"
+        self.assertEqual(num_employed, 5)
+        self.assertEqual(num_onlookers, 5)
+        self.assertEqual(mock_problem.next.call_count, 5)
+        self.assertEqual(mock_problem.evaluate.call_count, 20)
+        self.assertEqual(bco.best_solution.fitness, 0.0)

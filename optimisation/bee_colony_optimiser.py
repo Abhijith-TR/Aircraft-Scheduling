@@ -1,5 +1,5 @@
 import math
-from optimisation.problem import Problem
+from optimisation.problem import Problem, Solution
 from optimisation.optimiser import Optimiser
 from enum import Enum
 from typing import Any
@@ -11,7 +11,7 @@ class BeeType(Enum):
     UNEMPLOYED = "UNEMPLYOYED"
 
 
-class Bee:
+class Bee(Solution):
     """
     Class to represent a bee
 
@@ -34,8 +34,7 @@ class Bee:
         :param bee_type: type of the bee
         :param _id: unique id of the bee
         """
-        self.solution = solution
-        self.fitness = fitness
+        super().__init__(solution, fitness)
         self.type = bee_type
         self.trials = 0
         self._id = _id
@@ -50,6 +49,14 @@ class Bee:
         """
         self.solution = solution
         self.fitness = fitness
+
+    def to_solution(self) -> Solution:
+        """
+        Function to convert the bee to a solution
+
+        :return: Solution of the bee
+        """
+        return Solution(self.solution, self.fitness)
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.solution}:{self.type}:{self.fitness}:{self.trials}>"
@@ -189,14 +196,14 @@ class BeeColonyOptimiser(Optimiser):
             if bee.type == BeeType.EMPLOYED
         ]
 
-    def optimise(self):
+    def optimise(self) -> Solution:
         """
         Function to optimise the problem
 
         :return: Solution to the problem in the form of a problem solution
         """
         self.optimise_iter(self.max_iter)
-        return self.best_solution
+        return self.best_solution.to_solution()
 
     def optimise_iter(self, num_iter: int):
         """

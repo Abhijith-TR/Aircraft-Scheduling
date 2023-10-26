@@ -2,6 +2,17 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 
+class Solution:
+    def __init__(self, solution: Any, fitness: float):
+        self.solution = solution
+        self.fitness = fitness
+
+    def __str__(self):
+        return str(self.solution)
+    
+    def __repr__(self) -> str:
+        return f"Solution<{self.solution} : {self.fitness}>"
+
 class Problem(ABC):
     def __init__(self):
         pass

@@ -33,32 +33,29 @@ class ACSTest(unittest.TestCase):
 
     def test_init(self):
         correct_ordering = [self.planes[1], self.planes[2], self.planes[0]]
-        assert self.acs.no_of_runways == 2
-        assert self.acs.no_ac_types == 3
-        assert self.acs.separation_matrix == self.sep_matrix
-        assert self.acs.landing_ac == self.planes
-        assert self.acs.takeoff_ac == []
-        assert self.acs.all_ac == correct_ordering
+        self.assertEqual(self.acs.no_of_runways, 2)
+        self.assertEqual(self.acs.no_ac_types, 3)
+        self.assertEqual(self.acs.separation_matrix, self.sep_matrix)
+        self.assertEqual(self.acs.landing_ac, self.planes)
+        self.assertEqual(self.acs.takeoff_ac, [])
+        self.assertEqual(self.acs.all_ac, correct_ordering)
 
     def test_evaluate(self):
         solution = [1, 2, 1]
         score = self.acs.evaluate(solution)
-        assert score == 310, f"Score should be 310 was {score}"
+        self.assertEqual(score, 310)
 
         solution = [1, 1, 1]
         score = self.acs.evaluate(solution)
-        assert score == 630, f"Score should be 630 was {score}"
+        self.assertEqual(score, 630)
 
     def test_generate_solution(self):
         solution = self.acs.generate_solution()
-        assert len(solution) == 3, f"Solution should be of length 3 was {solution}"
+        self.assertEqual(len(solution), 3)
 
     def test_next(self):
         solution = [1, 2, 1, 2, 1, 1, 1]
         companion = [1, 1, 1, 1, 1, 2, 1]
         new_solution = self.acs.next(solution, companion)
-        assert new_solution != [
-            1,
-            2,
-            1,
-        ], f"Solution should not be unchanged was {new_solution}"
+        self.assertIsInstance(new_solution, solution.__class__)
+        self.assertIsInstance(new_solution[0], solution[0].__class__)

@@ -67,7 +67,7 @@ class ACS(Problem):
         for i in range(len(solution)):
             if ac_type_on_runway[solution[i] - 1] == 0:
                 ac_type_on_runway[solution[i] - 1] = self.all_ac[i].ac_type
-                current_runway_times[solution[i] - 1] += (self.all_ac[i].eta_etd)[
+                current_runway_times[solution[i] - 1] += self.all_ac[i].eta_etd[
                     solution[i] - 1
                 ]
                 continue
@@ -80,14 +80,14 @@ class ACS(Problem):
                 + self.separation_matrix[previous_ac_type - 1][current_ac_type - 1]
             )
             landing_time = max(
-                (self.all_ac[i].eta_etd)[solution[i] - 1], min_runway_landing_time
+                self.all_ac[i].eta_etd[solution[i] - 1], min_runway_landing_time+1
             )
+
             cost += (
-                landing_time - (self.all_ac[i].eta_etd)[solution[i] - 1]
+                landing_time - self.all_ac[i].eta_etd[solution[i] - 1]
             ) * self.all_ac[i].delay_cost
             current_runway_times[solution[i] - 1] = landing_time
-        if cost == None:
-            print("None dsu:", solution)
+            ac_type_on_runway[solution[i] - 1] = self.all_ac[i].ac_type
         return cost
 
     def next(self, solution, companion):

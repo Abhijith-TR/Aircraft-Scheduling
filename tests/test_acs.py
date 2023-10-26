@@ -1,11 +1,10 @@
 import unittest
-from unittest.mock import Mock, MagicMock
 from problem.acs import ACS, Airplane
 
 
 class PlaneTest(unittest.TestCase):
     def test_plane_init(self):
-        plane = Airplane(2, 120, 0, 400, [1, 2], 10, 10)
+        plane = Airplane('P892', 2, 120, 0, 400, [1, 2], 10, 10)
         assert plane.ac_type == 2
         assert plane.eta_etd == [1, 2]
         assert plane.delay_cost == 10
@@ -14,19 +13,19 @@ class PlaneTest(unittest.TestCase):
 
 class ACSTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.planes = [
-            Airplane(2, 120, 0, 400, [1, 1], 10, 10),
-            Airplane(0, 0, 0, 100, [1, 1], 10, 10),
-            Airplane(1, 120, 0, 200, [1, 1], 10, 10),
-        ]
-
         """
+        Is this is the best possible ordering?
         [
-            Airplane(0, 0, 0, 100, [1,2], 5, 5),
-            Airplane(1, 120, 0, 200, [1,2], 5, 5),
-            Airplane(2, 120 , 0, 400, [1,2], 10, 10),
+           Airplane('A345', 0, 0, 0, 100, [1,2], 5, 5),
+           Airplane('A678', 1, 120, 0, 200, [1,2], 5, 5),
+           Airplane('A123', 2, 120 , 0, 400, [1,2], 10, 10),
         ]
         """
+        self.planes = [
+            Airplane('A123', 3, 120, 0, 400, [1, 1], 10, 10),
+            Airplane('A345', 1, 0, 0, 100, [1, 1], 10, 10),
+            Airplane('A678', 2, 120, 0, 200, [1, 1], 10, 10),
+        ]
         self.sep_matrix = [[5, 20, 30], [5, 10, 20], [5, 10, 20]]
 
         self.acs = ACS(2, 3, self.sep_matrix, self.planes, [])
@@ -42,14 +41,13 @@ class ACSTest(unittest.TestCase):
         assert self.acs.all_ac == correct_ordering
 
     def test_evaluate(self):
-        # TODO: Please make it pass
         solution = [1, 2, 1]
         score = self.acs.evaluate(solution)
-        assert score == 0, f"Score should be 0 was {score}"
+        assert score == 310, f"Score should be 310 was {score}"
 
         solution = [1, 1, 1]
         score = self.acs.evaluate(solution)
-        assert score == 0, f"Score should be 0 was {score}"
+        assert score == 630, f"Score should be 630 was {score}"
 
     def test_generate_solution(self):
         solution = self.acs.generate_solution()

@@ -9,6 +9,7 @@ class Airplane:
         pre_cost: Cost of preponement
     """
 
+    model: str
     ac_type: int
     input_time: int
     starting_time: int
@@ -19,6 +20,7 @@ class Airplane:
 
     def __init__(
         self,
+        model: str,
         ac_type: int,
         input_time: int,
         starting_time: int,
@@ -35,6 +37,7 @@ class Airplane:
         :param delay_cost: Cost of arrival later than eta
         :param pre_cost: Cost of arrival earlier than eta
         """
+        self.model = model
         self.ac_type = ac_type
         self.input_time = input_time
         self.starting_time = starting_time

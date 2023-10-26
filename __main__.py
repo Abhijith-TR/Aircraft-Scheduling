@@ -18,7 +18,7 @@ def make_input_from_csv(
         categories = {"Light": 0, "Medium": 1, "Heavy": 2}
         f.writelines(f"{len(ac_df)}\n")
         for _, row in ac_df.iterrows():
-            file_row = f"{categories[row['category']]} {row['sta_s'] - 60*40} {row['sta_s'] - 20*60} {row['sta_s'] + 20*60} "
+            file_row = f"{row['mdl']} {categories[row['category']]} {row['sta_s'] - 60*40} {row['sta_s'] - 20*60} {row['sta_s'] + 20*60} "
 
             for i in range(num_runways):
                 file_row += f"{row['sta_s']} "
@@ -38,15 +38,16 @@ def input_ac_details(no_of_ac: int, file: typing.TextIO):
     """
     ac_list = []
     for i in range(no_of_ac):
-        ac_details = list(map(int, file.readline().split()))
+        ac_details = list(map(str, file.readline().split()))
         aeroplane = Airplane(
             ac_details[0],
-            ac_details[1],
-            ac_details[2],
-            ac_details[3],
-            ac_details[4:-2],
-            ac_details[-2],
-            ac_details[-1],
+            int(ac_details[1]),
+            int(ac_details[2]),
+            int(ac_details[3]),
+            int(ac_details[4]),
+            [int(j) for j in ac_details[5:-2]],
+            int(ac_details[-2]),
+            int(ac_details[-1]),
         )
         ac_list.append(aeroplane)
     return ac_list
@@ -88,6 +89,7 @@ if __name__ == "__main__":
     ac_input = read_input()
     asp = ACS(*ac_input)
     print(asp)
-    bco = BeeColonyOptimiser(asp, 100, 10000, 10, 1)
+    bco = BeeColonyOptimiser(asp, 100, 1000, 10, 1)
     best_solution = bco.optimise()
     print(best_solution)
+    print(best_solution.fitness)

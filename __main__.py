@@ -1,4 +1,6 @@
 import typing
+
+from optimisation.fcfs import FCFS
 from problem.airplane import Airplane
 from problem.acs import ACS
 from optimisation.bee_colony_optimiser import BeeColonyOptimiser
@@ -93,3 +95,4 @@ if __name__ == "__main__":
     best_solution = bco.optimise()
     print(best_solution)
     print(best_solution.fitness)
+    print(asp.evaluate(FCFS().solve(asp)))

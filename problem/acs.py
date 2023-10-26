@@ -67,7 +67,9 @@ class ACS(Problem):
         for i in range(len(solution)):
             if ac_type_on_runway[solution[i] - 1] == 0:
                 ac_type_on_runway[solution[i] - 1] = self.all_ac[i].ac_type
-                current_runway_times[solution[i] - 1] += (self.all_ac[i].eta_etd)[solution[i] - 1]
+                current_runway_times[solution[i] - 1] += (self.all_ac[i].eta_etd)[
+                    solution[i] - 1
+                ]
                 continue
 
             current_ac_type = self.all_ac[i].ac_type
@@ -77,10 +79,15 @@ class ACS(Problem):
                 runway_delay
                 + self.separation_matrix[previous_ac_type - 1][current_ac_type - 1]
             )
-            landing_time = max((self.all_ac[i].eta_etd)[solution[i] - 1], min_runway_landing_time)
-            cost += (landing_time - (self.all_ac[i].eta_etd)[solution[i] - 1]) * self.all_ac[i].delay_cost
+            landing_time = max(
+                (self.all_ac[i].eta_etd)[solution[i] - 1], min_runway_landing_time
+            )
+            cost += (
+                landing_time - (self.all_ac[i].eta_etd)[solution[i] - 1]
+            ) * self.all_ac[i].delay_cost
             current_runway_times[solution[i] - 1] = landing_time
-        if cost == None: print("None dsu:",solution)
+        if cost == None:
+            print("None dsu:", solution)
         return cost
 
     def next(self, solution, companion):
@@ -113,10 +120,7 @@ class ACS(Problem):
         #     (airplane, random.randint(1, self.no_of_runways))
         #     for airplane in self.all_ac
         # ]
-        solution = [
-            random.randint(1, self.no_of_runways)
-            for airplane in self.all_ac
-        ]
+        solution = [random.randint(1, self.no_of_runways) for airplane in self.all_ac]
         return solution
 
     def __repr__(self) -> str:

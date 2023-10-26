@@ -24,7 +24,6 @@ def make_input_from_csv(
                 file_row += f"{row['sta_s']} "
 
             file_row += f"{int(row['cost_5']//4)} {int(row['cost_5']//4)}\n"
-            # print(index)
             f.writelines(file_row)
         f.writelines("0\n")
 

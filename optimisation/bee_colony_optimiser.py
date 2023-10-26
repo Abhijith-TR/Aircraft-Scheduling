@@ -113,7 +113,11 @@ class BeeColonyOptimiser(Optimiser):
         """
         employed_bees = [bee for bee in self.bees if bee.type == BeeType.EMPLOYED]
         for bee in employed_bees:
-            other_bees = [other_bee for other_bee in self.bees if other_bee != bee and other_bee.solution != None]
+            other_bees = [
+                other_bee
+                for other_bee in self.bees
+                if other_bee != bee and other_bee.solution != None
+            ]
             next_solution = self.problem.next(
                 bee.solution, random.choice(other_bees).solution
             )
@@ -134,7 +138,9 @@ class BeeColonyOptimiser(Optimiser):
         :param probabilities: List of probabilities of each bee(solution)
         :return: None
         """
-        onlookers: list[Bee] = [bee for bee in self.bees if bee.type == BeeType.UNEMPLOYED]
+        onlookers: list[Bee] = [
+            bee for bee in self.bees if bee.type == BeeType.UNEMPLOYED
+        ]
         probabilities.sort(key=lambda x: x[1], reverse=True)
 
         index = 0
@@ -171,7 +177,7 @@ class BeeColonyOptimiser(Optimiser):
                 break
             if scout_candidate.trials > self.trail_limits:
                 new_solution = self.problem.generate_solution()
-                new_fitness = self.problem.evaluate(new_solution) 
+                new_fitness = self.problem.evaluate(new_solution)
                 scout_candidate.update_solution(new_solution, new_fitness)
                 scout_candidate.trials = 0
                 scouts_produced += 1
@@ -203,7 +209,7 @@ class BeeColonyOptimiser(Optimiser):
             probabilities = self.get_probablility_array()
             self.onlooker_exploit(probabilities)
             self.explore()
-            assert self.bees.count(None) == 0 , f"None in bees: {self.bees}"
+            assert self.bees.count(None) == 0, f"None in bees: {self.bees}"
             current_best = min(self.bees, key=lambda x: x.fitness)
             self.best_solution = min(
                 current_best,

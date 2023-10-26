@@ -42,6 +42,6 @@ class Airplane:
         self.eta_etd = eta_etd
         self.delay_cost = delay_cost
         self.pre_cost = pre_cost
-    
+
     def __repr__(self):
         return f"Airplane({self.ac_type}, {self.eta_etd})"

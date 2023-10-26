@@ -27,10 +27,8 @@ class ACSTest(unittest.TestCase):
             Airplane(2, 120 , 0, 400, [1,2], 10, 10),
         ]
         """
-        self.sep_matrix = [[5, 20, 30], 
-                      [5, 10, 20], 
-                      [5, 10, 20]]
-        
+        self.sep_matrix = [[5, 20, 30], [5, 10, 20], [5, 10, 20]]
+
         self.acs = ACS(2, 3, self.sep_matrix, self.planes, [])
         return super().setUp()
 
@@ -44,7 +42,7 @@ class ACSTest(unittest.TestCase):
         assert self.acs.all_ac == correct_ordering
 
     def test_evaluate(self):
-        #TODO: Please make it pass
+        # TODO: Please make it pass
         solution = [1, 2, 1]
         score = self.acs.evaluate(solution)
         assert score == 0, f"Score should be 0 was {score}"

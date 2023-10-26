@@ -1,3 +1,4 @@
+import math
 from optimisation.problem import Problem
 from optimisation.optimiser import Optimiser
 from enum import Enum
@@ -7,7 +8,7 @@ import random
 
 class BeeType(Enum):
     EMPLOYED = "EMPLOYED"
-    EXPLORER = "EXPLORER"
+    UNEMPLOYED = "UNEMPLYOYED"
 
 
 class Bee:
@@ -51,7 +52,7 @@ class Bee:
         self.fitness = fitness
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} {self.solution}:{self.type}:{self.trials}>"
+        return f"<{self.__class__.__name__} {self.solution}:{self.type}:{self.fitness}:{self.trials}>"
 
     def __hash__(self):
         return hash(self._id)
@@ -62,14 +63,15 @@ class BeeColonyOptimiser(Optimiser):
     Class to represent the Bee Colony Optimiser
     ---
     Attributes:
+        problem: Problem to optimise
         number_of_bees: Number of bees
         max_iter: Maximum number of iterations
         max_scouts: Maximum number of scouts
-        trail_limits: Trail limit
-        bees: List of bees
+        trial_limits: Trial limit
+        max_scouts: Maximum number of scouts
     """
 
-    def __int__(
+    def __init__(
         self,
         problem: Problem,
         number_of_bees: int,
@@ -91,16 +93,17 @@ class BeeColonyOptimiser(Optimiser):
         self.max_iter = max_iter
         self.max_scouts = max_scouts
         self.trail_limits = trial_limit
+        self.best_solution = Bee(None, math.inf, BeeType.EMPLOYED)
         self.bees = []
 
         for i in range(self.number_of_bees):
             solution = self.problem.generate_solution()
             if i < self.number_of_bees / 2:
                 self.bees.append(
-                    Bee(solution, self.problem.evaluate(solution), BeeType.EMPLOYED)
+                    Bee(solution, self.problem.evaluate(solution), BeeType.EMPLOYED, i)
                 )
             else:
-                self.bees.append(Bee(None, None, BeeType.EXPLORER))
+                self.bees.append(Bee(None, math.inf, BeeType.UNEMPLOYED, i))
 
     def employed_exploit(self) -> None:
         """
@@ -110,14 +113,15 @@ class BeeColonyOptimiser(Optimiser):
         """
         employed_bees = [bee for bee in self.bees if bee.type == BeeType.EMPLOYED]
         for bee in employed_bees:
-            other_bees = [other_bee for other_bee in self.bees if other_bee != bee]
+            other_bees = [other_bee for other_bee in self.bees if other_bee != bee and other_bee.solution != None]
             next_solution = self.problem.next(
                 bee.solution, random.choice(other_bees).solution
             )
-            if self.problem.evaluate(next_solution) < self.problem.evaluate(
-                bee.solution
-            ):
-                bee.update_solution(next_solution, self.problem.evaluate(next_solution))
+
+            fitness_next = self.problem.evaluate(next_solution)
+
+            if fitness_next < bee.fitness:
+                bee.update_solution(next_solution, fitness_next)
                 bee.trials = 0
             else:
                 bee.trials += 1
@@ -130,7 +134,7 @@ class BeeColonyOptimiser(Optimiser):
         :param probabilities: List of probabilities of each bee(solution)
         :return: None
         """
-        onlookers = [bee for bee in self.bees if bee.type == BeeType.EXPLORER]
+        onlookers: list[Bee] = [bee for bee in self.bees if bee.type == BeeType.UNEMPLOYED]
         probabilities.sort(key=lambda x: x[1], reverse=True)
 
         index = 0
@@ -143,7 +147,8 @@ class BeeColonyOptimiser(Optimiser):
                 onlookers[index].update_solution(
                     bee.solution, self.problem.evaluate(bee.solution)
                 )
-                bee.type = BeeType.EXPLORER
+                bee.type = BeeType.UNEMPLOYED
+
                 onlookers[index].type = BeeType.EMPLOYED
                 onlookers[index].trials = bee.trials
                 index += 1
@@ -165,9 +170,18 @@ class BeeColonyOptimiser(Optimiser):
             if scouts_produced >= self.max_scouts:
                 break
             if scout_candidate.trials > self.trail_limits:
-                scout_candidate.update_solution(self.problem.generate_solution())
+                new_solution = self.problem.generate_solution()
+                new_fitness = self.problem.evaluate(new_solution) 
+                scout_candidate.update_solution(new_solution, new_fitness)
                 scout_candidate.trials = 0
                 scouts_produced += 1
+
+    def get_probablility_array(self) -> list[(Bee, float)]:
+        return [
+            (bee, 1 / (1 + self.problem.evaluate(bee.solution)))
+            for bee in self.bees
+            if bee.type == BeeType.EMPLOYED
+        ]
 
     def optimise(self):
         """
@@ -175,19 +189,24 @@ class BeeColonyOptimiser(Optimiser):
 
         :return: Solution to the problem in the form of a problem solution
         """
-        for _ in range(self.max_iter):
+        self.optimise_iter(self.max_iter)
+        return self.best_solution
+
+    def optimise_iter(self, num_iter: int):
+        """
+        Run the optimiser for a given number of iterations
+
+        :param num_iter: Number of iterations
+        """
+        for _ in range(num_iter):
             self.employed_exploit()
-            # TODO: Fix probabilities to reflect fitness
-            probabilities = [
-                (bee, 1 / (1 + self.problem.evaluate(bee.solution)))
-                for bee in self.bees
-            ]
+            probabilities = self.get_probablility_array()
             self.onlooker_exploit(probabilities)
             self.explore()
+            assert self.bees.count(None) == 0 , f"None in bees: {self.bees}"
+            current_best = min(self.bees, key=lambda x: x.fitness)
             self.best_solution = min(
-                min(self.bees, key=lambda x: x.fitness).solution,
+                current_best,
                 self.best_solution,
                 key=lambda x: x.fitness,
             )
-
-        return self.best_solution

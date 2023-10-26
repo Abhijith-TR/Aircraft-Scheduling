@@ -49,6 +49,8 @@ class ACS(Problem):
         self.takeoff_ac = takeoff_ac
         self.all_ac = self.landing_ac + self.takeoff_ac
         self.all_ac.sort(key=lambda x: x.ending_time)
+        for ac in self.all_ac:
+            assert len(ac.eta_etd) == self.no_of_runways
 
     def evaluate(self, solution: list[int]) -> int:
         """
@@ -65,7 +67,7 @@ class ACS(Problem):
         for i in range(len(solution)):
             if ac_type_on_runway[solution[i] - 1] == 0:
                 ac_type_on_runway[solution[i] - 1] = self.all_ac[i].ac_type
-                current_runway_times += self.all_ac[i].eta_etd
+                current_runway_times[solution[i] - 1] += (self.all_ac[i].eta_etd)[solution[i] - 1]
                 continue
 
             current_ac_type = self.all_ac[i].ac_type
@@ -75,11 +77,10 @@ class ACS(Problem):
                 runway_delay
                 + self.separation_matrix[previous_ac_type - 1][current_ac_type - 1]
             )
-
-            landing_time = max(self.all_ac[i].eta_etd, min_runway_landing_time)
-            cost += (landing_time - self.all_ac[i].eta_etd) * self.all_ac[i].delay_cost
+            landing_time = max((self.all_ac[i].eta_etd)[solution[i] - 1], min_runway_landing_time)
+            cost += (landing_time - (self.all_ac[i].eta_etd)[solution[i] - 1]) * self.all_ac[i].delay_cost
             current_runway_times[solution[i] - 1] = landing_time
-
+        if cost == None: print("None dsu:",solution)
         return cost
 
     def next(self, solution, companion):
@@ -102,14 +103,21 @@ class ACS(Problem):
         return new_solution
 
     def generate_solution(self):
-        """ "
+        """
         Generates a random solution to the problem. The solution is a list of integers,
         where the index of the list represents the airplane and the value at that
         index represents the runway. The order of the airplanes in the list is the
         order in which they are scheduled on a specific runway.
         """
+        # solution = [
+        #     (airplane, random.randint(1, self.no_of_runways))
+        #     for airplane in self.all_ac
+        # ]
         solution = [
-            (airplane, random.randint(1, self.no_of_runways))
+            random.randint(1, self.no_of_runways)
             for airplane in self.all_ac
         ]
         return solution
+
+    def __repr__(self) -> str:
+        return f"ACS < {self.no_of_runways} : {self.no_ac_types} : {self.separation_matrix}: {len(self.all_ac)} Airplanes>"

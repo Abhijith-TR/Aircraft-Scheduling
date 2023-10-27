@@ -1,4 +1,5 @@
 from problem.acs import ACS
+from optimisation.problem import Solution
 
 
 class FCFS:
@@ -42,4 +43,5 @@ class FCFS:
             runway_delay[min_runway-1] = min_delay
             solution.append(min_runway)
 
-        return solution
+        fcfs_solution = Solution(solution, problem.evaluate(solution))
+        return fcfs_solution

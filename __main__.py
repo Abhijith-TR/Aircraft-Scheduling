@@ -95,4 +95,7 @@ if __name__ == "__main__":
     best_solution = bco.optimise()
     print(best_solution)
     print(best_solution.fitness)
-    print(asp.evaluate(FCFS().solve(asp)))
+
+    fcfs_solution = FCFS().solve(asp)
+    print(fcfs_solution)
+    print(fcfs_solution.fitness)

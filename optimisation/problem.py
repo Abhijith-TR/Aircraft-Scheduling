@@ -19,6 +19,13 @@ class Problem(ABC, Generic[T]):
 
     @abstractmethod
     def next(self, solution: T, companion: T) -> T:
+        """
+        Returns the next neighbour of the solution based on the companion solution.
+
+        :param solution: The solution to be changed.
+        :param companion: The companion solution used to generate the new solution.
+        :return: A new solution.
+        """
         pass
 
     @abstractmethod

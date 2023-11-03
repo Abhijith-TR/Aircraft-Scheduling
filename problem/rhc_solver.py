@@ -1,13 +1,15 @@
 from functools import partial
+from typing import Dict, List, Tuple
 from optimisation.bee_colony_optimiser import BeeColonyOptimiser
 from optimisation.optimiser import Optimiser
 from problem.acs import ACS
 from copy import deepcopy
 
 from problem.acs_solution import ACSolution
+from problem.airplane import Airplane
 
 
-class RHCSolver(Optimiser):
+class RHCSolver(Optimiser[ACSolution]):
     """
     Class to represent the RHCSolver
     Solves the aircraft scheduling problem using REceding Horizon control.
@@ -24,6 +26,7 @@ class RHCSolver(Optimiser):
     def __init__(
         self,
         problem: ACS,
+        number_of_bees: int,
         max_iter_per_horizon: int,
         time_window: int,
         num_windows: int,
@@ -33,22 +36,33 @@ class RHCSolver(Optimiser):
         # Creating a copy of the problem for reference as we may need to change the ac eta_etd
         self.problem = deepcopy(problem)
         self.original_problem = problem
+        self.number_of_bees = number_of_bees
         self.max_iter_per_horizon = max_iter_per_horizon
         self.time_window = time_window
         self.num_windows = num_windows
         self.trial_limit = trial_limit
         self.max_scouts = max_scouts
+        self.scheduled = set()
 
         # beginning and end of the time horizon
         self.time_start = min([min(ac.eta_etd) for ac in self.problem.all_ac])
         self.time_end = max([min(ac.eta_etd) for ac in self.problem.all_ac])
 
     def trim_problem(self, start_time: int, end_time: int) -> ACS:
+        """
+        Selects the aircrafts that are to be scheduled in the current horizon
+
+        :param start_time: The start time of the horizon
+        :param end_time: The end time of the horizon
+        :return: The trimmed problem
+        """
         # selecting acs to be scheduled
         landing_ac = [
             ac
             for ac in self.problem.landing_ac
-            if max(ac.eta_etd) <= end_time and max(ac.eta_etd) >= start_time
+            if min(ac.eta_etd) >= start_time
+            and min(ac.eta_etd) < end_time
+            and ac not in self.scheduled
         ]
 
         new_acs = ACS(
@@ -61,34 +75,84 @@ class RHCSolver(Optimiser):
 
         return new_acs
 
+    def construct_solution(
+        self, solution_map: Dict[Airplane, Tuple[int, int]]
+    ) -> ACSolution:
+        """
+        Constructs an ACS Solution from the solution map
+
+        :param solution_map: The solution map
+        :return: The ACS Solution
+        """
+        solution = self.problem.generate_empty_solution()
+        solution.value = []
+
+        for ac, (time, runway) in solution_map.items():
+            solution.value.append(runway)
+        
+        # Calculating the fitness of the solution based on original problem
+        solution.fitness = self.original_problem.evaluate(solution.value)
+        # Setting the correct aircraft sequence
+        solution.aircraft_sequence = self.original_problem.all_ac
+        return solution
+
     def optimise(self):
-        partial_solution = ACSolution([], float('inf'), self.problem.all_ac)
-
+        # initialise the solution map key: airplane, value the time and runway assigned to it
+        scheduled_acs: Dict[Airplane, Tuple[int, int]] = dict()
         for t in range(
-            self.time_start, self.time_end, self.num_windows * self.time_window
+            self.time_start,
+            self.time_end + (self.num_windows * self.time_window) + 1,
+            self.time_window,
         ):
-            start_time = t
-            end_time = t + self.num_windows * self.time_window
+            # Initialising horizon bounds
+            horizon_start = t
+            horizon_end = t + self.num_windows * self.time_window
 
-            # initialise the trimmed problem
-            trimmed_acs = self.trim_problem(start_time, end_time)
+            # initialise the trimmed problem: Consider only aircraft contained in the horizon
+            trimmed_acs = self.trim_problem(horizon_start, horizon_end)
+            if len(trimmed_acs.all_ac) == 0:
+                continue
 
+            # initialise the bee colony optimiser
             bco = BeeColonyOptimiser[ACSolution](
                 trimmed_acs,
+                self.number_of_bees,
                 self.max_iter_per_horizon,
                 self.trial_limit,
                 self.max_scouts,
             )
 
+            # Finding a solution for the trimmed problem
             solution = bco.optimise()
 
+            # Finding the assigned landing times and runways for the aircrafts
             landing_times = trimmed_acs.get_landing_times(solution.value)
-            schedule_window_end = start_time + self.time_window
+            schedule_window_end = horizon_start + self.time_window
+
+            # Arrays to maintain the last landing time and type for each runway
+            last_runway_landing_time = [0] * trimmed_acs.no_of_runways
+            last_runway_landing_type = [0] * trimmed_acs.no_of_runways
 
             for i in range(len(solution.value)):
                 time, runway = landing_times[i]
+
                 if time > schedule_window_end:
+                    # If the landing time is outside the window, we need to update the eta_etd to lie in the next window
                     for j in range(trimmed_acs.no_of_runways):
-                        self.problem.all_ac[i].eta_etd[j] = max(
-                            self.problem.all_ac[i].eta_etd[j], schedule_window_end
+                        trimmed_acs.all_ac[i].eta_etd[j] = max(
+                            trimmed_acs.separation_matrix[
+                                last_runway_landing_type[j] - 1
+                            ][trimmed_acs.all_ac[i].ac_type - 1]
+                            + last_runway_landing_time[j]
+                            + 1,
+                            trimmed_acs.all_ac[i].eta_etd[j],
                         )
+                else:
+                    # If the landing time is within the window, we can schedule the aircraft
+                    scheduled_acs[trimmed_acs.all_ac[i]] = landing_times[i]
+                    self.scheduled.add(trimmed_acs.all_ac[i])
+                    last_runway_landing_time[runway - 1] = time
+                    last_runway_landing_type[runway - 1] = trimmed_acs.all_ac[i].ac_type
+
+        # Constructing the solution from the solution map
+        return self.construct_solution(scheduled_acs)

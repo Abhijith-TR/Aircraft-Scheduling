@@ -31,9 +31,9 @@ class ACS(Problem[ACSolution]):
         self,
         no_of_runways: int,
         no_of_ac_types: int,
-        separation_matrix: list[list[int]],
-        landing_ac: list[Airplane],
-        takeoff_ac: list[Airplane],
+        separation_matrix: List[List[int]],
+        landing_ac: List[Airplane],
+        takeoff_ac: List[Airplane],
     ):
         """
         Constructor for the ACS class.
@@ -127,6 +127,7 @@ class ACS(Problem[ACSolution]):
         new_solution = ACSolution(
             solution.value.copy(), solution.fitness, solution.aircraft_sequence
         )
+        # print(new_solution)
         index = random.randint(0, len(new_solution.value) - 1)
         phi = 2 * random.random() - 1
         new_solution.value[index] = int(

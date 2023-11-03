@@ -1,12 +1,23 @@
+from typing import List
+
+
 class Airplane:
     """
     Class to store airplane details
 
-    Attributes:
-        ac_type: Type of airplane
-        eta_etd: List of eta and etd
-        delay_cost: Cost of delay
-        pre_cost: Cost of preponement
+    Attributes
+    ----------
+    model : str
+        Model of airplane
+    ac_type : int
+        Type of airplane
+    eta_etd : List[int]
+        List of eta and etd to all runways
+    delay_cost : int
+        Cost of arrival later than eta
+    pre_cost : int
+        Cost of arrival earlier than eta    
+
     """
 
     model: str
@@ -14,7 +25,7 @@ class Airplane:
     input_time: int
     starting_time: int
     ending_time: int
-    eta_etd: list[int]
+    eta_etd: List[int]
     delay_cost: int
     pre_cost: int
 
@@ -25,7 +36,7 @@ class Airplane:
         input_time: int,
         starting_time: int,
         ending_time: int,
-        eta_etd: list[int],
+        eta_etd: List[int],
         delay_cost: int,
         pre_cost: int,
     ):

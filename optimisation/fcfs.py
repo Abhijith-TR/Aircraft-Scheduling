@@ -7,6 +7,11 @@ class FCFS:
     Class to implement First Come First Serve algorithm. The algorithm assigns
     the first available runway to the airplane that arrives first. If the runway
     is not available, the airplane is delayed until the runway is available.
+
+    Attributes
+    ----------
+    problem : ACS
+        The problem to be solved
     """
     def solve(self, problem: ACS):
         runway_delay = [0 for i in range(problem.no_of_runways)]

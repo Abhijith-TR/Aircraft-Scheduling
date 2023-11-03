@@ -7,6 +7,8 @@ from optimisation.bee_colony_optimiser import BeeColonyOptimiser
 import pandas as pd
 from pprint import pprint as print
 
+from problem.rhc_solver import RHCSolver
+
 
 def make_input_from_csv(
     path: str, num_runways: int, output_path: str = "./my_input.txt"
@@ -91,11 +93,12 @@ if __name__ == "__main__":
     ac_input = read_input()
     asp = ACS(*ac_input)
     print(asp)
-    bco = BeeColonyOptimiser(asp, 500, 1000, 10, 1)
-    best_solution = bco.optimise()
-    print(best_solution)
-    print(best_solution.fitness)
+
+    bco_solution = BeeColonyOptimiser(asp, 500, 500, 10, 1).optimise()
+    print(bco_solution.fitness)
 
     fcfs_solution = FCFS().solve(asp)
-    print(fcfs_solution)
     print(fcfs_solution.fitness)
+
+    rhc_solution = RHCSolver(asp, 500, 100, 30*60, 2, 10, 1).optimise()
+    print(rhc_solution.fitness)

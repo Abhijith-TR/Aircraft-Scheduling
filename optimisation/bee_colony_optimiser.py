@@ -17,12 +17,18 @@ class Bee(Generic[T]):
     """
     Class to represent a bee
 
-    Attributes:
-        solution: Solution of the bee
-        fitness: Fitness of the solution
-        type: Type of the bee
-        trials: Number of trials
-        _id: Unique id of the bee
+    Attributes
+    ----------
+    solution : T
+        The solution of the bee
+    fitness : float
+        The fitness of the solution
+    type : BeeType
+        The type of the bee
+    trials : int
+        The number of trials the bee has undergone
+    _id : int
+        The unique id of the bee
     """
 
     def __init__(self, solution: T, bee_type: BeeType, _id: int = -1):
@@ -67,14 +73,23 @@ class Bee(Generic[T]):
 class BeeColonyOptimiser(Optimiser[T]):
     """
     Class to represent the Bee Colony Optimiser
-    ---
-    Attributes:
-        problem: Problem to optimise
-        number_of_bees: Number of bees
-        max_iter: Maximum number of iterations
-        max_scouts: Maximum number of scouts
-        trial_limits: Trial limit
-        max_scouts: Maximum number of scouts
+
+    Attributes
+    ----------
+    problem : Problem[T]
+        The problem to be optimised
+    number_of_bees : int
+        The number of bees
+    max_iter : int
+        The maximum number of iterations
+    max_scouts : int
+        The maximum number of scouts
+    trail_limits : int
+        The maximum number of trials
+    best_solution : Bee[T]
+        The best solution found
+    bees : List[Bee[T]]
+        The list of bees
     """
 
     def __init__(
@@ -114,7 +129,7 @@ class BeeColonyOptimiser(Optimiser[T]):
 
     def employed_exploit(self) -> None:
         """
-        Function to exploit the employed bees
+        Function to run the employed bees exploit phase
 
         :return: None
         """
@@ -195,6 +210,12 @@ class BeeColonyOptimiser(Optimiser[T]):
                 scouts_produced += 1
 
     def get_probablility_array(self) -> List[Tuple[Bee, float]]:
+        """
+        Function to get the probability array of the bees. Higher the fitness, higher
+        the probability
+
+        :return: List of probabilities of each bee(solution)
+        """
         return [
             (bee, 1 / (1 + bee.solution.fitness))
             for bee in self.bees
@@ -212,7 +233,8 @@ class BeeColonyOptimiser(Optimiser[T]):
 
     def optimise_iter(self, num_iter: int):
         """
-        Run the optimiser for a given number of iterations
+        Run the optimiser for a given number of iterations. Runs the employed exploit,
+        onlooker exploit and explore phases for each iteration
 
         :param num_iter: Number of iterations
         """

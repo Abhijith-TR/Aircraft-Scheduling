@@ -91,7 +91,7 @@ if __name__ == "__main__":
     ac_input = read_input()
     asp = ACS(*ac_input)
     print(asp)
-    bco = BeeColonyOptimiser(asp, 100, 1000, 10, 1)
+    bco = BeeColonyOptimiser(asp, 500, 1000, 10, 1)
     best_solution = bco.optimise()
     print(best_solution)
     print(best_solution.fitness)

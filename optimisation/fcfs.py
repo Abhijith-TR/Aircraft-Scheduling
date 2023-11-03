@@ -40,7 +40,7 @@ class FCFS:
                     min_runway = i+1
 
             runway_type[min_runway-1] = ac.ac_type
-            runway_delay[min_runway-1] = min_delay
+            runway_delay[min_runway-1] = int(min_delay)
             solution.append(min_runway)
 
         fcfs_solution = Solution(solution, problem.evaluate(solution))

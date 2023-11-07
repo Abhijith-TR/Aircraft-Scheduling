@@ -95,6 +95,9 @@ class ACS(Problem[ACSolution]):
 
         return landing_times
 
+    def evaluate_solution(self, solution: ACSolution) -> float:
+        return self.evaluate(solution.value)
+
     def evaluate(self, solution: List[int]) -> int:
         """
         Function that evaluates the solution. The cost of the solution is the sum of

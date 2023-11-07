@@ -1,5 +1,6 @@
 from functools import partial
-from typing import Dict, List, Tuple
+from re import A
+from typing import Any, Dict, List, Tuple, Type
 from optimisation.bee_colony_optimiser import BeeColonyOptimiser
 from optimisation.optimiser import Optimiser
 from problem.acs import ACS
@@ -26,22 +27,18 @@ class RHCSolver(Optimiser[ACSolution]):
     def __init__(
         self,
         problem: ACS,
-        number_of_bees: int,
-        max_iter_per_horizon: int,
         time_window: int,
         num_windows: int,
-        trial_limit: int,
-        max_scouts: int,
+        optimiser_class: Type[Optimiser[ACSolution]],
+        optimiser_params: Dict[str, Any]
     ):
         # Creating a copy of the problem for reference as we may need to change the ac eta_etd
         self.problem = deepcopy(problem)
         self.original_problem = problem
-        self.number_of_bees = number_of_bees
-        self.max_iter_per_horizon = max_iter_per_horizon
         self.time_window = time_window
         self.num_windows = num_windows
-        self.trial_limit = trial_limit
-        self.max_scouts = max_scouts
+        self.optimiser_class = optimiser_class
+        self.optimiser_params = optimiser_params
         self.scheduled = set()
 
         # beginning and end of the time horizon
@@ -99,11 +96,14 @@ class RHCSolver(Optimiser[ACSolution]):
     def optimise(self):
         # initialise the solution map key: airplane, value the time and runway assigned to it
         scheduled_acs: Dict[Airplane, Tuple[int, int]] = dict()
+        run = 0
         for t in range(
             self.time_start,
             self.time_end + (self.num_windows * self.time_window) + 1,
             self.time_window,
         ):
+            print(f"Running iteration {run}")
+            run+=1
             # Initialising horizon bounds
             horizon_start = t
             horizon_end = t + self.num_windows * self.time_window
@@ -111,19 +111,13 @@ class RHCSolver(Optimiser[ACSolution]):
             # initialise the trimmed problem: Consider only aircraft contained in the horizon
             trimmed_acs = self.trim_problem(horizon_start, horizon_end)
             if len(trimmed_acs.all_ac) == 0:
-                continue
+                break
 
             # initialise the bee colony optimiser
-            bco = BeeColonyOptimiser[ACSolution](
-                trimmed_acs,
-                self.number_of_bees,
-                self.max_iter_per_horizon,
-                self.trial_limit,
-                self.max_scouts,
-            )
+            optimiser = self.optimiser_class(trimmed_acs, **self.optimiser_params)
 
             # Finding a solution for the trimmed problem
-            solution = bco.optimise()
+            solution = optimiser.optimise()
 
             # Finding the assigned landing times and runways for the aircrafts
             landing_times = trimmed_acs.get_landing_times(solution.value)

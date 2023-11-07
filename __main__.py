@@ -1,9 +1,10 @@
 import typing
 
 from optimisation.fcfs import FCFS
+from optimisation.ga import GeneticOptimiser
 from problem.airplane import Airplane
 from problem.acs import ACS
-from optimisation.bee_colony_optimiser import BeeColonyOptimiser
+from optimisation.bee_colony_optimiser import Bee, BeeColonyOptimiser
 import pandas as pd
 from pprint import pprint as print
 
@@ -97,8 +98,23 @@ if __name__ == "__main__":
     bco_solution = BeeColonyOptimiser(asp, 500, 500, 10, 1).optimise()
     print(bco_solution.fitness)
 
-    fcfs_solution = FCFS().solve(asp)
+    fcfs_solution = FCFS(asp).optimise()
     print(fcfs_solution.fitness)
 
-    rhc_solution = RHCSolver(asp, 500, 100, 30*60, 2, 10, 1).optimise()
+    ga_solution = GeneticOptimiser(asp, 50, 500).optimise()
+    print(ga_solution.fitness)
+
+    bco_args = {
+        "number_of_bees": 500,
+        "max_iter": 100,
+        "trial_limit": 10,
+        "max_scouts": 1,
+    }
+
+    ga_args = {"population_size": 50, "generations": 500}
+
+    fcfs_args = {}
+    
+    rhc_solution = RHCSolver(asp, 30*60, 2, GeneticOptimiser, ga_args).optimise()
     print(rhc_solution.fitness)
+

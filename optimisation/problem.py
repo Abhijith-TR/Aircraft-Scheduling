@@ -29,6 +29,15 @@ class Problem(ABC, Generic[T]):
         pass
 
     @abstractmethod
+    def evaluate_solution(self, solution: T) -> float:
+        """
+        Evaluates the solution.
+
+        :return: The cost of the solution.
+        """
+        pass
+        
+    @abstractmethod
     def generate_solution(self) -> T:
         """
         Generates a random solution to begin with.

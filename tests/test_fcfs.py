@@ -25,8 +25,8 @@ class MyTestCase(unittest.TestCase):
         return super().setUp()
 
     def test_fcfs(self):
-        fcfs_solver = FCFS()
-        solution = fcfs_solver.solve(self.acs)
+        fcfs_solver = FCFS(self.acs)
+        solution = fcfs_solver.optimise()
         # self.assertEqual(solution.value, [1, 2, 2])
         self.assertEqual(self.acs.evaluate(solution.value), 210)
 

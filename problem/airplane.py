@@ -26,8 +26,8 @@ class Airplane:
     starting_time: int
     ending_time: int
     eta_etd: List[int]
-    delay_cost: int
-    pre_cost: int
+    delay_cost: float
+    pre_cost: float
 
     def __init__(
         self,
@@ -37,8 +37,8 @@ class Airplane:
         starting_time: int,
         ending_time: int,
         eta_etd: List[int],
-        delay_cost: int,
-        pre_cost: int,
+        delay_cost: float,
+        pre_cost: float,
     ):
         """
         Constructor for Airplane class

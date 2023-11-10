@@ -52,7 +52,7 @@ class ACS(Problem[ACSolution]):
         self.takeoff_ac = takeoff_ac
 
         self.all_ac = self.landing_ac + self.takeoff_ac
-        self.all_ac.sort(key=lambda x: min(x.eta_etd))
+        self.all_ac.sort(key=lambda x: x.ending_time)
         for ac in self.all_ac:
             assert len(ac.eta_etd) == self.no_of_runways
 
@@ -98,7 +98,7 @@ class ACS(Problem[ACSolution]):
     def evaluate_solution(self, solution: ACSolution) -> float:
         return self.evaluate(solution.value)
 
-    def evaluate(self, solution: List[int]) -> int:
+    def evaluate(self, solution: List[int]) -> float:
         """
         Function that evaluates the solution. The cost of the solution is the sum of
         the delay costs of all landing airplanes.

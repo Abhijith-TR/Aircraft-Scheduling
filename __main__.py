@@ -6,7 +6,6 @@ from problem.airplane import Airplane
 from problem.acs import ACS
 from optimisation.bee_colony_optimiser import Bee, BeeColonyOptimiser
 import pandas as pd
-from pprint import pprint as print
 
 from problem.rhc_solver import RHCSolver
 
@@ -23,12 +22,13 @@ def make_input_from_csv(
         categories = {"Light": 1, "Medium": 2, "Heavy": 3}
         f.writelines(f"{len(ac_df)}\n")
         for _, row in ac_df.iterrows():
-            file_row = f"{row['mdl']} {categories[row['category']]} {row['sta_s'] - 60*40} {row['sta_s'] - 20*60} {row['sta_s'] + 20*60} "
+            file_row = f"{row['mdl']} {categories[row['category']]} {row['sta_s'] - 60*40} \
+                {row['sta_s'] - 20*60} {row['sta_s'] + 20*60} "
 
             for i in range(num_runways):
                 file_row += f"{row['sta_s']} "
 
-            file_row += f"{int(row['cost_5']//4)} {int(row['cost_5']//4)}\n"
+            file_row += f"{row['cost_5']} {row['cost_5']}\n"
             f.writelines(file_row)
         f.writelines("0\n")
 
@@ -51,8 +51,8 @@ def input_ac_details(no_of_ac: int, file: typing.TextIO):
             int(ac_details[3]),
             int(ac_details[4]),
             [int(j) for j in ac_details[5:-2]],
-            int(ac_details[-2]),
-            int(ac_details[-1]),
+            float(ac_details[-2]),
+            float(ac_details[-1]),
         )
         ac_list.append(aeroplane)
     return ac_list
@@ -90,19 +90,19 @@ def read_input(path: str = "./my_input.txt"):
 
 
 if __name__ == "__main__":
-    make_input_from_csv("./dataset/ikli_codes/alp_7_30.csv", num_runways=3)
+    make_input_from_csv("./dataset/ikli_codes/alp_7_50.csv", num_runways=3)
     ac_input = read_input()
     asp = ACS(*ac_input)
     print(asp)
 
     bco_solution = BeeColonyOptimiser(asp, 500, 500, 10, 1).optimise()
-    print(bco_solution.fitness)
+    print(bco_solution)
 
     fcfs_solution = FCFS(asp).optimise()
-    print(fcfs_solution.fitness)
+    print(fcfs_solution)
 
     ga_solution = GeneticOptimiser(asp, 50, 500).optimise()
-    print(ga_solution.fitness)
+    print(ga_solution)
 
     bco_args = {
         "number_of_bees": 500,
@@ -114,9 +114,9 @@ if __name__ == "__main__":
     ga_args = {"population_size": 50, "generations": 500}
 
     fcfs_args = {}
-    
+
     rhc_solution = RHCSolver(asp, 30*60, 2, GeneticOptimiser, ga_args).optimise()
-    print(rhc_solution.fitness)
+    print(rhc_solution)
 
     rhc_solution = RHCSolver(asp, 30*60, 2, BeeColonyOptimiser, bco_args).optimise()
-    print(rhc_solution.fitness)
+    print(rhc_solution)

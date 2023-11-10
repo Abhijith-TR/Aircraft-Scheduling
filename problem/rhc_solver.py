@@ -102,7 +102,6 @@ class RHCSolver(Optimiser[ACSolution]):
             self.time_end + (self.num_windows * self.time_window) + 1,
             self.time_window,
         ):
-            print(f"Running iteration {run}")
             run+=1
             # Initialising horizon bounds
             horizon_start = t

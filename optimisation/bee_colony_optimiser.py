@@ -1,10 +1,8 @@
-import math
-import pprint
-from optimisation.problem import Problem, Solution
-from optimisation.optimiser import Optimiser
-from enum import Enum
-from typing import Any, Generic, List, Tuple, TypeVar
 import random
+from typing import Generic, List, Tuple, TypeVar
+from enum import Enum
+from optimisation.optimiser import Optimiser
+from optimisation.problem import Problem, Solution
 
 T = TypeVar("T", bound="Solution")
 

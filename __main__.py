@@ -90,7 +90,7 @@ def read_input(path: str = "./my_input.txt"):
 
 
 if __name__ == "__main__":
-    make_input_from_csv("./dataset/ikli_codes/alp_7_50.csv", num_runways=3)
+    make_input_from_csv("./dataset/ikli_codes/alp_7_30.csv", num_runways=3)
     ac_input = read_input()
     asp = ACS(*ac_input)
     print(asp)
@@ -118,3 +118,5 @@ if __name__ == "__main__":
     rhc_solution = RHCSolver(asp, 30*60, 2, GeneticOptimiser, ga_args).optimise()
     print(rhc_solution.fitness)
 
+    rhc_solution = RHCSolver(asp, 30*60, 2, BeeColonyOptimiser, bco_args).optimise()
+    print(rhc_solution.fitness)

@@ -7,6 +7,10 @@ from optimisation.problem import Problem, Solution
 T = TypeVar("T", bound="Solution")
 
 class BeeType(Enum):
+    """
+    Specifies the type of the bee (employed or unemployed) for the Bee Colony 
+    Optimiser
+    """
     EMPLOYED = "EMPLOYED"
     UNEMPLOYED = "UNEMPLYOYED"
 
@@ -62,7 +66,8 @@ class Bee(Generic[T]):
         return self.solution
 
     def __repr__(self):
-        return f"""<{self.__class__.__name__}\n\t{self.type}:{self.trials} \n\tSolution: {self.solution}\n>"""
+        return f"<{self.__class__.__name__}\n\t{self.type}:{self.trials} "\
+                "\n\tSolution: {self.solution}\n>"
 
     def __hash__(self):
         return hash(self._id)
@@ -136,7 +141,7 @@ class BeeColonyOptimiser(Optimiser[T]):
             other_bees = [
                 other_bee
                 for other_bee in self.bees
-                if other_bee != bee and other_bee.solution.value != None
+                if other_bee != bee and other_bee.solution.value is not None
             ]
 
             next_solution = self.problem.next(
@@ -175,7 +180,6 @@ class BeeColonyOptimiser(Optimiser[T]):
                 onlookers[index].update_solution(bee.solution)
                 onlookers[index].type = BeeType.EMPLOYED
                 onlookers[index].trials = bee.trials
-                
                 index += 1
 
             probability_index = (probability_index + 1) % len(probabilities)
@@ -198,7 +202,7 @@ class BeeColonyOptimiser(Optimiser[T]):
                 other_bees = [
                     other_bee
                     for other_bee in self.bees
-                    if other_bee != scout_candidate and other_bee.solution.value != None
+                    if other_bee != scout_candidate and other_bee.solution.value is not None
                 ]
                 next_solution = self.problem.next(
                     scout_candidate.solution, random.choice(other_bees).solution

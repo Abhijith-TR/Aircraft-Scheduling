@@ -1,10 +1,9 @@
-from copy import deepcopy
+import random
 from typing import List, Tuple
 from optimisation.problem import Problem
 from problem.acs_solution import ACSolution
 from problem.airplane import Airplane
 
-import random
 
 
 class ACS(Problem[ACSolution]):
@@ -67,31 +66,31 @@ class ACS(Problem[ACSolution]):
         ac_type_on_runway = [0] * self.no_of_runways
         landing_times = []
 
-        for i in range(len(solution)):
-            if ac_type_on_runway[solution[i] - 1] == 0:
-                ac_type_on_runway[solution[i] - 1] = self.all_ac[i].ac_type
-                current_runway_times[solution[i] - 1] += self.all_ac[i].eta_etd[
-                    solution[i] - 1
+        for i, runway in enumerate(solution):
+            if ac_type_on_runway[runway - 1] == 0:
+                ac_type_on_runway[runway - 1] = self.all_ac[i].ac_type
+                current_runway_times[runway - 1] += self.all_ac[i].eta_etd[
+                    runway - 1
                 ]
                 landing_times.append(
-                    (current_runway_times[solution[i] - 1], solution[i])
+                    (current_runway_times[runway - 1], runway)
                 )
                 continue
 
             current_ac_type = self.all_ac[i].ac_type
-            previous_ac_type = ac_type_on_runway[solution[i] - 1]
-            runway_delay = current_runway_times[solution[i] - 1]
+            previous_ac_type = ac_type_on_runway[runway - 1]
+            runway_delay = current_runway_times[runway - 1]
             min_runway_landing_time = (
                 runway_delay
                 + self.separation_matrix[previous_ac_type - 1][current_ac_type - 1]
             )
             landing_time = max(
-                self.all_ac[i].eta_etd[solution[i] - 1], min_runway_landing_time + 1
+                self.all_ac[i].eta_etd[runway - 1], min_runway_landing_time + 1
             )
 
-            current_runway_times[solution[i] - 1] = landing_time
-            ac_type_on_runway[solution[i] - 1] = self.all_ac[i].ac_type
-            landing_times.append((landing_time, solution[i]))
+            current_runway_times[runway - 1] = landing_time
+            ac_type_on_runway[runway - 1] = self.all_ac[i].ac_type
+            landing_times.append((landing_time, runway))
 
         return landing_times
 
@@ -164,4 +163,5 @@ class ACS(Problem[ACSolution]):
         return ACSolution(None, float("inf"), [])
 
     def __repr__(self) -> str:
-        return f"ACS < {self.no_of_runways} : {self.no_ac_types} : {self.separation_matrix}: {len(self.all_ac)} Airplanes>"
+        return f"ACS < {self.no_of_runways} : {self.no_ac_types} : "\
+            "{self.separation_matrix}: {len(self.all_ac)} Airplanes>"

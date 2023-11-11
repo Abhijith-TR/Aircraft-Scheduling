@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
+from typing import Generic, TypeVar
 from optimisation.problem import Problem, Solution
-from typing import Any, Generic, TypeVar
 
 T = TypeVar("T", bound="Solution")
 
@@ -15,6 +15,7 @@ class Optimiser(ABC, Generic[T]):
     best_solution : T
         The best solution found
     """
+
     def __init__(self, problem: Problem[T]):
         """
         Optimiser class to represent an optimiser
@@ -31,4 +32,3 @@ class Optimiser(ABC, Generic[T]):
 
         :return: The best solution found
         """
-        pass

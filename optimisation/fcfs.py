@@ -1,7 +1,7 @@
-from optimisation.optimiser import Optimiser
 from problem.acs import ACS
-from optimisation.problem import Solution
 from problem.acs_solution import ACSolution
+from optimisation.optimiser import Optimiser
+from optimisation.problem import Solution
 
 
 class FCFS(Optimiser[ACSolution]):
@@ -17,6 +17,7 @@ class FCFS(Optimiser[ACSolution]):
     """
 
     def __init__(self, problem: ACS):
+        super().__init__(problem)
         self.problem = problem
 
     def optimise(self):

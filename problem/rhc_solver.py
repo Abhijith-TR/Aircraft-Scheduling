@@ -1,10 +1,7 @@
-from functools import partial
-from re import A
-from typing import Any, Dict, List, Tuple, Type
-from optimisation.bee_colony_optimiser import BeeColonyOptimiser
+from typing import Any, Dict, Tuple, Type
+from copy import deepcopy
 from optimisation.optimiser import Optimiser
 from problem.acs import ACS
-from copy import deepcopy
 
 from problem.acs_solution import ACSolution
 from problem.airplane import Airplane
@@ -33,6 +30,7 @@ class RHCSolver(Optimiser[ACSolution]):
         optimiser_params: Dict[str, Any]
     ):
         # Creating a copy of the problem for reference as we may need to change the ac eta_etd
+        super().__init__(problem)
         self.problem = deepcopy(problem)
         self.original_problem = problem
         self.time_window = time_window
@@ -84,9 +82,9 @@ class RHCSolver(Optimiser[ACSolution]):
         solution = self.problem.generate_empty_solution()
         solution.value = []
 
-        for ac, (time, runway) in solution_map.items():
+        for _, (_, runway) in solution_map.items():
             solution.value.append(runway)
-        
+
         # Calculating the fitness of the solution based on original problem
         solution.fitness = self.original_problem.evaluate(solution.value)
         # Setting the correct aircraft sequence
@@ -130,7 +128,8 @@ class RHCSolver(Optimiser[ACSolution]):
                 time, runway = landing_times[i]
 
                 if time > schedule_window_end:
-                    # If the landing time is outside the window, we need to update the eta_etd to lie in the next window
+                    # If the landing time is outside the window, we need to update
+                    # the eta_etd to lie in the next window
                     for j in range(trimmed_acs.no_of_runways):
                         trimmed_acs.all_ac[i].eta_etd[j] = max(
                             trimmed_acs.separation_matrix[

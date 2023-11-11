@@ -5,6 +5,9 @@ T = TypeVar("T", bound="Solution")
 
 
 class Solution:
+    """
+    Class to represent a solution to a problem
+    """
     def __init__(self, value: Any, fitness: float):
         self.value = value
         self.fitness = fitness
@@ -14,6 +17,9 @@ class Solution:
 
 
 class Problem(ABC, Generic[T]):
+    """
+    Class to represent a problem to be solved
+    """
     def __init__(self):
         pass
 
@@ -26,7 +32,6 @@ class Problem(ABC, Generic[T]):
         :param companion: The companion solution used to generate the new solution.
         :return: A new solution.
         """
-        pass
 
     @abstractmethod
     def evaluate_solution(self, solution: T) -> float:
@@ -35,8 +40,7 @@ class Problem(ABC, Generic[T]):
 
         :return: The cost of the solution.
         """
-        pass
-        
+
     @abstractmethod
     def generate_solution(self) -> T:
         """
@@ -44,7 +48,6 @@ class Problem(ABC, Generic[T]):
 
         :return: A solution to the problem
         """
-        pass
 
     @abstractmethod
     def generate_empty_solution(self) -> T:
@@ -53,4 +56,3 @@ class Problem(ABC, Generic[T]):
 
         :return: A solution to the problem
         """
-        pass

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import List, Optional
 from optimisation.problem import Solution
 from problem.airplane import Airplane
 

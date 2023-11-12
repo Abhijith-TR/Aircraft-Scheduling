@@ -164,4 +164,4 @@ class ACS(Problem[ACSolution]):
 
     def __repr__(self) -> str:
         return f"ACS < {self.no_of_runways} : {self.no_ac_types} : "\
-            "{self.separation_matrix}: {len(self.all_ac)} Airplanes>"
+            f"{self.separation_matrix}: {len(self.all_ac)} Airplanes>"

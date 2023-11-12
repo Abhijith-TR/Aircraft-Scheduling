@@ -53,7 +53,7 @@ class GeneticOptimiser(Optimiser[T]):
         """
         Performs mutation on the solution by swapping two random values
         """
-        pos1, pos2 = random.sample(range(len(solution.value)), 2)
+        pos1, pos2 = [random.randint(0, len(solution.value) - 1) for _ in range(2)]
         solution.value[pos1], solution.value[pos2] = (
             solution.value[pos2],
             solution.value[pos1],

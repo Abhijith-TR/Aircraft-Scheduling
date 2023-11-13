@@ -14,7 +14,7 @@ def make_input_from_csv(
     """
     with open(output_path, "w", encoding="utf-8") as f:
         f.writelines(str(num_runways) + "\n")
-        f.writelines(str(num_runways) + "\n")
+        f.writelines("3\n")
         f.writelines(["82 69 60\n", "131 69 60\n", "196 157 96\n"])
         ac_df = pd.read_csv(path)
 

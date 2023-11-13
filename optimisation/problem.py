@@ -1,35 +1,58 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Generic, TypeVar
+
+T = TypeVar("T", bound="Solution")
 
 
 class Solution:
-    def __init__(self, solution: Any, fitness: float):
-        self.solution = solution
+    """
+    Class to represent a solution to a problem
+    """
+    def __init__(self, value: Any, fitness: float):
+        self.value = value
         self.fitness = fitness
 
-    def __str__(self):
-        return str(self.solution)
-    
     def __repr__(self) -> str:
-        return f"Solution<{self.solution} : {self.fitness}>"
+        return f"{self.__class__.__name__}<{self.value} : {self.fitness}>"
 
-class Problem(ABC):
+
+class Problem(ABC, Generic[T]):
+    """
+    Class to represent a problem to be solved
+    """
     def __init__(self):
         pass
 
     @abstractmethod
-    def evaluate(self, solution):
-        pass
+    def next(self, solution: T, companion: T) -> T:
+        """
+        Returns the next neighbour of the solution based on the companion solution.
+
+        :param solution: The solution to be changed.
+        :param companion: The companion solution used to generate the new solution.
+        :return: A new solution.
+        """
 
     @abstractmethod
-    def next(self, solution, companion):
-        pass
+    def evaluate_solution(self, solution: T) -> float:
+        """
+        Evaluates the solution.
+
+        :return: The cost of the solution.
+        """
 
     @abstractmethod
-    def generate_solution(self) -> Any:
+    def generate_solution(self) -> T:
         """
         Generates a random solution to begin with.
 
         :return: A solution to the problem
         """
-        pass
+
+    @abstractmethod
+    def generate_empty_solution(self) -> T:
+        """
+        Generates an empty solution.
+
+        :return: A solution to the problem
+        """

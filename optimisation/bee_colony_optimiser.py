@@ -124,15 +124,18 @@ class BeeColonyOptimiser(Optimiser[T]):
         self.best_solution = Bee(
             self.problem.generate_empty_solution(), BeeType.EMPLOYED
         )
-        self.bees: List[Bee] = []
+        self.employed_bees: List[Bee] = []
+        self.unemployed_bees: List[Bee] = []
 
         for i in range(self.number_of_bees):
             if i < self.number_of_bees / 2:
                 sol = problem.generate_solution()
                 assert isinstance(sol, Solution)
-                self.bees.append(Bee(problem.generate_solution(), BeeType.EMPLOYED, i))
+                self.employed_bees.append(
+                    Bee(problem.generate_solution(), BeeType.EMPLOYED, i)
+                )
             else:
-                self.bees.append(
+                self.unemployed_bees.append(
                     Bee(Solution(None, float("inf")), BeeType.UNEMPLOYED, i)
                 )
 
@@ -142,16 +145,10 @@ class BeeColonyOptimiser(Optimiser[T]):
 
         :return: None
         """
-        employed_bees = [bee for bee in self.bees if bee.type == BeeType.EMPLOYED]
-        for bee in employed_bees:
-            other_bees = [
-                other_bee
-                for other_bee in self.bees
-                if other_bee != bee and other_bee.solution.value is not None
-            ]
 
+        for bee in self.employed_bees:
             next_solution = self.problem.next(
-                bee.solution, random.choice(other_bees).solution
+                bee.solution, random.choice(self.employed_bees).solution
             )
 
             fitness_next = next_solution.fitness
@@ -170,11 +167,9 @@ class BeeColonyOptimiser(Optimiser[T]):
         :param probabilities: List of probabilities of each bee(solution)
         :return: None
         """
-        onlookers = [bee for bee in self.bees if bee.type == BeeType.UNEMPLOYED]
+        onlookers = self.unemployed_bees
         for bee, _ in probabilities:
             bee.type = BeeType.UNEMPLOYED
-
-        probabilities.sort(key=lambda x: x[1], reverse=True)
 
         new_onlooker_population = random.choices(
             probabilities, weights=[prob for _, prob in probabilities], k=len(onlookers)
@@ -185,6 +180,11 @@ class BeeColonyOptimiser(Optimiser[T]):
             onlookers[i].type = BeeType.EMPLOYED
             onlookers[i].trials = new_onlooker[0].trials
 
+        self.employed_bees, self.unemployed_bees = (
+            self.unemployed_bees,
+            self.employed_bees,
+        )
+
     def explore(self) -> None:
         """
         Function to simulate bees exploring food sources as scouts once they have
@@ -192,7 +192,7 @@ class BeeColonyOptimiser(Optimiser[T]):
 
         :return: None
         """
-        scout_candidates = [bee for bee in self.bees if bee.type == BeeType.EMPLOYED]
+        scout_candidates = self.employed_bees
         scout_candidates.sort(key=lambda x: x.trials, reverse=True)
         scouts_produced = 0
 
@@ -202,7 +202,7 @@ class BeeColonyOptimiser(Optimiser[T]):
             if scout_candidate.trials > self.trail_limits:
                 other_bees = [
                     other_bee
-                    for other_bee in self.bees
+                    for other_bee in self.employed_bees
                     if other_bee != scout_candidate
                     and other_bee.solution.value is not None
                 ]
@@ -220,11 +220,7 @@ class BeeColonyOptimiser(Optimiser[T]):
 
         :return: List of probabilities of each bee(solution)
         """
-        return [
-            (bee, 1 / (1 + bee.solution.fitness))
-            for bee in self.bees
-            if bee.type == BeeType.EMPLOYED
-        ]
+        return [(bee, 1 / (1 + bee.solution.fitness)) for bee in self.employed_bees]
 
     def optimise(self) -> T:
         """
@@ -242,12 +238,17 @@ class BeeColonyOptimiser(Optimiser[T]):
 
         :param num_iter: Number of iterations
         """
+        self.best_solution = min(
+            min(self.employed_bees, key=lambda x: x.solution.fitness),
+            self.best_solution,
+            key=lambda x: x.solution.fitness,
+        )
         for _ in range(num_iter):
             self.employed_exploit()
             probabilities = self.get_probablility_array()
             self.onlooker_exploit(probabilities)
             self.explore()
-            current_best = min(self.bees, key=lambda x: x.solution.fitness)
+            current_best = min(self.employed_bees, key=lambda x: x.solution.fitness)
             self.best_solution = min(
                 current_best,
                 self.best_solution,

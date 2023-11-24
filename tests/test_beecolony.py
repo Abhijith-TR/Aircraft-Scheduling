@@ -50,8 +50,8 @@ class OptimiserTest(unittest.TestCase):
         )
 
         self.assertEqual(bco.problem, mock_problem)
-        num_employed = len([bee for bee in bco.bees if bee.type == BeeType.EMPLOYED])
-        num_onlookers = len([bee for bee in bco.bees if bee.type == BeeType.UNEMPLOYED])
+        num_employed = len(bco.employed_bees)
+        num_onlookers = len(bco.unemployed_bees)
 
         self.assertEqual(num_employed, 5)
         self.assertEqual(num_onlookers, 5)
@@ -59,7 +59,7 @@ class OptimiserTest(unittest.TestCase):
         bco.optimise_iter(1)
 
         bee_fitness = [
-            bee.solution.fitness for bee in bco.bees if bee.type == BeeType.UNEMPLOYED
+            bee.solution.fitness for bee in bco.unemployed_bees
         ]
 
         self.assertEqual(num_employed, 5)

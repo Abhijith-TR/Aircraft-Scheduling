@@ -30,7 +30,7 @@ class ACS(Problem[ACSolution]):
         self,
         no_of_runways: int,
         no_of_ac_types: int,
-        separation_matrix: List[List[int]],
+        separation_matrix: List[List[float]],
         landing_ac: List[Airplane],
         takeoff_ac: List[Airplane],
     ):
@@ -62,7 +62,7 @@ class ACS(Problem[ACSolution]):
         :param solution: The solution to be evaluated.
         :return: The landing times of the airplanes in the solution.
         """
-        current_runway_times = [0] * self.no_of_runways
+        current_runway_times = [0.0] * self.no_of_runways
         ac_type_on_runway = [0] * self.no_of_runways
         landing_times = []
 

@@ -120,7 +120,7 @@ def compare_optimizers(csv_filename: list[str], with_rhc: bool = False):
     plt.bar(x - 1, time_array[0], width=1, label="BCO", align="center")
     plt.bar(x, time_array[1], width=1, label="GA", align="center")
     plt.bar(x + 1, time_array[2], width=1, label="FCFS", align="center")
-    plt.xticks(x, number_of_aircrafts)
+    plt.xticks(x, number_of_aircrafts) # type: ignore
     plt.xlabel("Number of aircrafts")
     plt.ylabel("Time")
     plt.tight_layout()
@@ -131,7 +131,7 @@ def compare_optimizers(csv_filename: list[str], with_rhc: bool = False):
     plt.bar(x - 1, cost[0], width=1, label="BCO", align="center")
     plt.bar(x, cost[1], width=1, label="GA", align="center")
     plt.bar(x + 1, cost[2], width=1, label="FCFS", align="center")
-    plt.xticks(x, number_of_aircrafts)
+    plt.xticks(x, number_of_aircrafts) # type: ignore
     plt.xlabel("Number of aircrafts")
     plt.ylabel("Cost")
     plt.tight_layout()
@@ -280,7 +280,7 @@ def get_bco_results(asp: ACS):
 
 def main():
     make_input_from_csv("./dataset/ikli_datasets/data_19_23.csv", num_runways=3)
-    ac_input = read_input()
+    ac_input = read_input(path="./data/input.txt")
     asp = ACS(*ac_input)
     print(asp)
 

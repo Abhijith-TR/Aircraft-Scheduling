@@ -58,4 +58,4 @@ class Airplane:
         self.pre_cost = pre_cost
 
     def __repr__(self):
-        return f"Airplane({self.ac_type}, {self.eta_etd})"
+        return f"Airplane({self.model} {self.ac_type}, {self.eta_etd})"

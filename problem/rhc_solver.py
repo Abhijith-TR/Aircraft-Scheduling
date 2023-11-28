@@ -27,7 +27,7 @@ class RHCSolver(Optimiser[ACSolution]):
         time_window: int,
         num_windows: int,
         optimiser_class: Type[Optimiser[ACSolution]],
-        optimiser_params: Dict[str, Any]
+        optimiser_params: Dict[str, Any],
     ):
         # Creating a copy of the problem for reference as we may need to change the ac eta_etd
         super().__init__(problem)
@@ -100,7 +100,7 @@ class RHCSolver(Optimiser[ACSolution]):
             self.time_end + (self.num_windows * self.time_window) + 1,
             self.time_window,
         ):
-            run+=1
+            run += 1
             # Initialising horizon bounds
             horizon_start = t
             horizon_end = t + self.num_windows * self.time_window
@@ -131,13 +131,15 @@ class RHCSolver(Optimiser[ACSolution]):
                     # If the landing time is outside the window, we need to update
                     # the eta_etd to lie in the next window
                     for j in range(trimmed_acs.no_of_runways):
-                        trimmed_acs.all_ac[i].eta_etd[j] = max(
-                            trimmed_acs.separation_matrix[
-                                last_runway_landing_type[j] - 1
-                            ][trimmed_acs.all_ac[i].ac_type - 1]
-                            + last_runway_landing_time[j]
-                            + 1,
-                            trimmed_acs.all_ac[i].eta_etd[j],
+                        trimmed_acs.all_ac[i].eta_etd[j] = int(
+                            max(
+                                trimmed_acs.separation_matrix[
+                                    last_runway_landing_type[j] - 1
+                                ][trimmed_acs.all_ac[i].ac_type - 1]
+                                + last_runway_landing_time[j]
+                                + 1,
+                                trimmed_acs.all_ac[i].eta_etd[j],
+                            )
                         )
                 else:
                     # If the landing time is within the window, we can schedule the aircraft

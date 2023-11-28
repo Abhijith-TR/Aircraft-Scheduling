@@ -71,7 +71,7 @@ def read_input(path: str = "./my_input.txt"):
 
         separation_matrix = []
         for _ in range(no_of_ac_types):
-            separation_matrix.append(list(map(int, f.readline().split())))
+            separation_matrix.append(list(map(float, f.readline().split())))
 
         no_of_landing_ac = int(f.readline())
         landing_ac = input_ac_details(no_of_landing_ac, f)

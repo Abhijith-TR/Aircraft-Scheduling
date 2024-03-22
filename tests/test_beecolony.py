@@ -31,7 +31,9 @@ class BeeTest(unittest.TestCase):
 
 
 class OptimiserTest(unittest.TestCase):
+    """Test Bee Colony Optimiser"""
     def test_optimiser_init(self):
+        """Test Optimiser initialisation"""
         mock_problem = Mock(Problem)
         fitness = [i / 10 for i in range(1000)].__iter__()
 
@@ -45,14 +47,17 @@ class OptimiserTest(unittest.TestCase):
             return_value=Solution(None, float("inf"))
         )
 
+        # Create the optimiser
         bco = BeeColonyOptimiser(
             problem=mock_problem, number_of_bees=10, max_iter=100, trial_limit=10
         )
 
+        # Check that the problem is set correctly
         self.assertEqual(bco.problem, mock_problem)
         num_employed = len(bco.employed_bees)
         num_onlookers = len(bco.unemployed_bees)
 
+        # Check that the number of bees is correct
         self.assertEqual(num_employed, 5)
         self.assertEqual(num_onlookers, 5)
 
@@ -61,6 +66,8 @@ class OptimiserTest(unittest.TestCase):
         bee_fitness = [
             bee.solution.fitness for bee in bco.unemployed_bees
         ]
+
+        # Check that the fitness values are in order
 
         self.assertEqual(num_employed, 5)
         self.assertEqual(num_onlookers, 5)

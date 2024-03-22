@@ -8,7 +8,7 @@ from problem.airplane import Airplane
 class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
         """
-        Is this is the best possible ordering?
+        Setting up the test case
         [
            Airplane('A345', 0, 0, 0, 100, [1,2], 5, 5),
            Airplane('A678', 1, 120, 0, 200, [1,2], 5, 5),
@@ -25,6 +25,9 @@ class MyTestCase(unittest.TestCase):
         return super().setUp()
 
     def test_fcfs(self):
+        """
+        Testing the FCFS solver on the given problem
+        """
         fcfs_solver = FCFS(self.acs)
         solution = fcfs_solver.optimise()
         # self.assertEqual(solution.value, [1, 2, 2])

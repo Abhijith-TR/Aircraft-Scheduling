@@ -4,6 +4,9 @@ from problem.acs_solution import ACSolution
 
 
 class PlaneTest(unittest.TestCase):
+    """
+    Test class for the Airplane class
+    """
     def test_plane_init(self):
         plane = Airplane("P892", 2, 120, 0, 400, [1, 2], 10, 10)
         assert plane.ac_type == 2
@@ -13,9 +16,12 @@ class PlaneTest(unittest.TestCase):
 
 
 class ACSTest(unittest.TestCase):
+    """
+    Test class for the ACS class
+    """
     def setUp(self) -> None:
         """
-        Is this is the best possible ordering?
+        The ordering will be as follows:
         [
            Airplane('A345', 0, 0, 0, 100, [1,2], 5, 5),
            Airplane('A678', 1, 120, 0, 200, [1,2], 5, 5),
@@ -33,6 +39,9 @@ class ACSTest(unittest.TestCase):
         return super().setUp()
 
     def test_init(self):
+        """
+        Testing the ACS Initialization
+        """
         correct_ordering = [self.planes[1], self.planes[2], self.planes[0]]
         self.assertEqual(self.acs.no_of_runways, 2)
         self.assertEqual(self.acs.no_ac_types, 3)
@@ -42,6 +51,9 @@ class ACSTest(unittest.TestCase):
         self.assertEqual(self.acs.all_ac, correct_ordering)
 
     def test_evaluate(self):
+        """
+        Testing the evaluate function
+        """
         solution = [1, 2, 1]
         score = self.acs.evaluate(solution)
         self.assertEqual(score, 310)
@@ -51,10 +63,16 @@ class ACSTest(unittest.TestCase):
         self.assertEqual(score, 630)
 
     def test_generate_solution(self):
+        """
+        Testing the generate_solution function
+        """
         solution = self.acs.generate_solution()
         self.assertEqual(len(solution.value), 3)
 
     def test_next(self):
+        """
+        Testing the next function to generate the next solution
+        """
         seq1 = [1, 2, 1, 2, 1, 1, 1]
         seq2 = [1, 1, 1, 1, 1, 2, 1]
         ac_seq = [self.planes[i % 3] for i in range(len(seq1))]

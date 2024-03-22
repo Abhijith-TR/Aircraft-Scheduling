@@ -1,7 +1,0 @@
-{
-    "python.analysis.typeCheckingMode": "basic",
-    "python.analysis.autoImportCompletions": true,
-    "pylint.args": [
-        "--disable=C0114"
-    ]
-}

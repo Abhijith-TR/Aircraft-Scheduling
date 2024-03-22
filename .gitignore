@@ -1,3 +1,6 @@
 venv
 **/__pycache__
 data/my_input.txt
+.vscode
+.idea
+term_paper.iml
